@@ -154,7 +154,7 @@
             >
               {% assign skip_card_product_styles = false %}
               {%- for product in collection.products -%}
-               {% unless product.tags contains 'bundle' %
+               {% unless product.tags contains 'bundle' %}
                 {% assign lazy_load = false %}
                 {%- if forloop.index > 2 -%}
                   {%- assign lazy_load = true -%}
@@ -179,9 +179,8 @@
                     section_id: section.id
                   %}
                 </li>
-
-                {%- assign skip_card_product_styles = true -%}
                  {% endunless %}
+                {%- assign skip_card_product_styles = true -%}
               {%- endfor -%}
             </ul>
 
