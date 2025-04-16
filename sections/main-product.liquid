@@ -723,7 +723,28 @@
     </script>
   </div>
 </product-info>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const sizeOptionSelector = document.querySelector('[name="options[Size]"]');
 
+    if (sizeOptionSelector) {
+      // Insert a default "Select Size" option
+      const defaultOption = document.createElement("option");
+      defaultOption.textContent = "Select Size";
+      defaultOption.value = "";
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+
+      // Only insert if not already inserted
+      if (!sizeOptionSelector.querySelector('option[value=""]')) {
+        sizeOptionSelector.insertBefore(defaultOption, sizeOptionSelector.firstChild);
+      }
+
+      // Force select the default option
+      sizeOptionSelector.value = "";
+    }
+  });
+</script>
 {% schema %}
 {
   "name": "t:sections.main-product.name",
