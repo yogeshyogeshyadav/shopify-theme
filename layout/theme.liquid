@@ -372,5 +372,44 @@
     {%- if settings.cart_type == 'drawer' -%}
       <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
+       <script>
+      window.onload = function () {
+        let cartContainsFreeProduct = false;
+        let cartContainsQualifyingProduct = false;
+
+        const qualifyingProductVariantId = 41616649060407;
+        const freeProductVariantId = 40486282166327;
+
+        {% for item in cart.items %}
+          if ({{ item.id }} === freeProductVariantId) {
+            cartContainsFreeProduct = true;
+          }
+          if ({{ item.id }} === qualifyingProductVariantId) {
+            cartContainsQualifyingProduct = true;
+          }
+        {% endfor %}
+
+        if (cartContainsQualifyingProduct && !cartContainsFreeProduct) {
+          fetch('/cart/add.js', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              quantity: 1,
+              id: freeProductVariantId
+            })
+          })
+          .then(response => {
+            if (response.ok) {
+              location.reload();
+            } else {
+              console.error('Failed to add free product');
+            }
+          })
+          .catch(error => console.error('Error:', error));
+        }
+      };
+    </script>
   </body>
 </html>

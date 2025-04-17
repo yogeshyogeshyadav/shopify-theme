@@ -224,7 +224,7 @@
                         assign has_vol_pricing = true
                       endif
                     -%}
-                    <td class="cart-item__quantity{% if has_qty_rules or has_vol_pricing %} cart-item__quantity--info{% endif %}">
+                    <td class="cart-item__quantity{% if has_qty_rules or has_vol_pricing %} cart-item__quantity--info{% endif %} ">
                       <quantity-popover>
                         <div class="cart-item__quantity-wrapper quantity-popover-wrapper">
                           <label class="visually-hidden" for="Quantity-{{ item.index | plus: 1 }}">
@@ -281,10 +281,15 @@
                           <cart-remove-button
                             id="Remove-{{ item.index | plus: 1 }}"
                             data-index="{{ item.index | plus: 1 }}"
+                            {% if item.variant.id == 41616649060407 %}
+                              delete-main-product="true"
+                            {% elsif item.variant.id == 40486282166327 %}
+                              delete-gift-product="true"
+                            {% endif %}
                           >
                             <a
                               href="{{ item.url_to_remove }}"
-                              class="button button--tertiary"
+                              class="button button--tertiary  {{ item.variant.id  }}"
                               aria-label="{{ 'sections.cart.remove_title' | t: title: item.title | escape }}"
                             >
                               <span class="svg-wrapper">
@@ -450,7 +455,31 @@
     </form>
   </div>
 </cart-items>
-
+<script>
+  document.addEventListener("click", function (e) {
+    const target = e.target.closest('[delete-main-product="true"]');
+    if (target) {
+      const variantIdToRemove = 40486282166327;
+      fetch('/cart.js')
+        .then(res => res.json())
+        .then(cart => {
+          const item = cart.items.find(i => i.variant_id === variantIdToRemove);
+          if (item) {
+            fetch('/cart/change.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                id: item.key,
+                quantity: 0
+              })
+            }).then(() => {
+              location.reload();
+            });
+          }
+        });
+    }
+  });
+</script>
 {% schema %}
 {
   "name": "t:sections.main-cart-items.name",
